@@ -1,12 +1,12 @@
-import { RoundOrganizer } from './roundOrganizer'
+import { RoundService } from './roundService'
 
-describe('Round organizer should', () => {
+describe('Round service should', () => {
   it('retrieve a list of rooms', () => {
-    const roundOrganizer = new RoundOrganizer()
+    const roundService = new RoundService()
     const roomSize = 2
     const participants = ['Ulises', 'Paco', 'Manu', 'Juan']
 
-    const rooms = roundOrganizer.getRoomsForNextRound(roomSize, participants)
+    const rooms = roundService.getRoomsForNextRound(roomSize, participants)
 
     expect(rooms).toHaveLength(2)
     expect(rooms[0].name).toBe('Room 1')
@@ -16,25 +16,25 @@ describe('Round organizer should', () => {
   })
 
   it('retrieve a list of rooms across rounds without repeating participants if it is possible', () => {
-    const roundOrganizer = new RoundOrganizer()
+    const roundService = new RoundService()
     const roomSize = 2
     const participants = ['Ulises', 'Paco', 'Manu', 'Juan']
 
-    let rooms = roundOrganizer.getRoomsForNextRound(roomSize, participants)
+    let rooms = roundService.getRoomsForNextRound(roomSize, participants)
     expect(rooms).toHaveLength(2)
     expect(rooms[0].name).toBe('Room 1')
     expect(rooms[0].participants).toStrictEqual(['Juan', 'Manu'])
     expect(rooms[1].name).toBe('Room 2')
     expect(rooms[1].participants).toStrictEqual(['Paco', 'Ulises'])
 
-    rooms = roundOrganizer.getRoomsForNextRound(roomSize, participants)
+    rooms = roundService.getRoomsForNextRound(roomSize, participants)
     expect(rooms).toHaveLength(2)
     expect(rooms[0].name).toBe('Room 1')
     expect(rooms[0].participants).toStrictEqual(['Juan', 'Paco'])
     expect(rooms[1].name).toBe('Room 2')
     expect(rooms[1].participants).toStrictEqual(['Manu', 'Ulises'])
 
-    rooms = roundOrganizer.getRoomsForNextRound(roomSize, participants)
+    rooms = roundService.getRoomsForNextRound(roomSize, participants)
     expect(rooms).toHaveLength(2)
     expect(rooms[0].name).toBe('Room 1')
     expect(rooms[0].participants).toStrictEqual(['Juan', 'Ulises'])
@@ -42,7 +42,7 @@ describe('Round organizer should', () => {
     expect(rooms[1].participants).toStrictEqual(['Manu', 'Paco'])
 
     // After no other possible combinations it starts again
-    rooms = roundOrganizer.getRoomsForNextRound(roomSize, participants)
+    rooms = roundService.getRoomsForNextRound(roomSize, participants)
     expect(rooms).toHaveLength(2)
     expect(rooms[0].name).toBe('Room 1')
     expect(rooms[0].participants).toStrictEqual(['Juan', 'Manu'])

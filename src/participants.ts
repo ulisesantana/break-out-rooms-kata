@@ -5,18 +5,26 @@ export class Participants {
     this.participants = new Set(participants)
   }
 
-  add (...participants: string[]): void {
-    participants.forEach(participant => {
+  add (...participants: string[] | Participants[]): void {
+    participants.forEach((participant: string | Participants) => {
       if (participant !== undefined) {
-        this.participants.add(participant)
+        if (participant instanceof Participants) {
+          this.add(...participant.values())
+        } else {
+          this.participants.add(participant)
+        }
       }
     })
   }
 
-  delete (...participants: string[]): void {
-    participants.forEach(participant => {
+  delete (...participants: string[] | Participants[]): void {
+    participants.forEach((participant: string | Participants) => {
       if (participant !== undefined) {
-        this.participants.delete(participant)
+        if (participant instanceof Participants) {
+          this.delete(...participant.values())
+        } else {
+          this.participants.delete(participant)
+        }
       }
     })
   }
@@ -35,10 +43,6 @@ export class Participants {
 
   filter (filterCallback: (participant: string, index: number, participants: string[]) => boolean): Participants {
     return new Participants(this.values().filter(filterCallback))
-  }
-
-  forEach (forEachCallback: (participant: string, index: number, participants: string[]) => void): void {
-    this.values().filter(forEachCallback)
   }
 
   getFirst (): string {
