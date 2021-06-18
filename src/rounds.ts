@@ -19,8 +19,8 @@ export class Rounds {
     for (const round of this.values()) {
       possibleParticipants.add(round.getParticipantsFromAllRoomsFor(participant))
       alreadyPairedParticipants.add(round.getAlreadyPairedParticipantsFromAllRoomsFor(participant))
-      possibleParticipants.delete(alreadyPairedParticipants)
     }
+    possibleParticipants.delete(alreadyPairedParticipants)
     return possibleParticipants.size === 0 ? alreadyPairedParticipants : possibleParticipants
   }
 
