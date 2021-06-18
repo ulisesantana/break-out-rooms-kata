@@ -1,8 +1,13 @@
-type Participants = string[]
+import { Participants } from './participants'
 
 interface Room {
     name: string
     participants: Participants
+}
+
+interface RawRoom {
+  name: string
+  participants: string[]
 }
 
 interface Round {
@@ -14,11 +19,11 @@ interface Round {
 export class RoundOrganizer {
     private rounds: Map<number, Round> = new Map()
 
-    getRoomsForNextRound (roomSize: number, participants: Participants): Room[] {
-      const rooms = this.splitParticipantsInRooms(roomSize, participants)
+    getRoomsForNextRound (roomSize: number, participants: string[]): RawRoom[] {
+      const rooms = this.splitParticipantsInRooms(roomSize, new Participants(participants))
       const roundNumber = this.rounds.size + 1
       this.rounds.set(roundNumber, { number: roundNumber, roomSize, rooms })
-      return rooms
+      return rooms.map(RoundOrganizer.transformToRawRoom)
     }
 
     getHistory (): Round[] {
@@ -26,10 +31,10 @@ export class RoundOrganizer {
     }
 
     private splitParticipantsInRooms (roomSize: number, participants: Participants, rooms = [] as Room[]): Room[] {
-      if (participants.length <= roomSize) {
+      if (participants.size <= roomSize) {
         return [...rooms, RoundOrganizer.createRoom(rooms.length + 1, participants)]
       }
-      const sortedParticipants = Array.from(participants).sort()
+      const sortedParticipants = participants.sort()
       const participantsForRoom: Participants = this.getParticipantsForRoom(roomSize, sortedParticipants)
 
       return this.splitParticipantsInRooms(
@@ -43,27 +48,28 @@ export class RoundOrganizer {
       if (this.rounds.size === 0) {
         return participants.slice(0, roomSize)
       } else {
-        const [nextParticipant] = participants
+        const nextParticipant = participants.getFirst()
         const possibleParticipants = Array.from(this.rounds.values()).reduce(
           RoundOrganizer.reducePossibleParticipants(nextParticipant),
-          new Set<string>()
+          new Participants()
         )
-        return [nextParticipant, ...Array.from(possibleParticipants).slice(0, roomSize - 1)]
+        return new Participants([nextParticipant, ...possibleParticipants.slice(0, roomSize - 1).values()])
       }
     }
 
     private static reducePossibleParticipants (nextParticipant: string) {
-      const alreadyPairedParticipants = new Set<string>()
-      return (possibleParticipants: Set<string>, { rooms }: Round) => {
+      const alreadyPairedParticipants = new Participants()
+      return (possibleParticipants: Participants, { rooms }: Round) => {
         for (const room of rooms) {
           if (!room.participants.includes(nextParticipant)) {
-            room.participants.forEach(participant => possibleParticipants.add(participant))
+            possibleParticipants.add(...room.participants.values())
           } else {
+            alreadyPairedParticipants.add(...room.participants.values())
             room.participants.forEach(participant => alreadyPairedParticipants.add(participant))
           }
         }
         alreadyPairedParticipants.delete(nextParticipant)
-        alreadyPairedParticipants.forEach(participant => possibleParticipants.delete(participant))
+        possibleParticipants.delete(...alreadyPairedParticipants.values())
         return possibleParticipants.size === 0 ? alreadyPairedParticipants : possibleParticipants
       }
     }
@@ -72,6 +78,13 @@ export class RoundOrganizer {
       return {
         name: `Room ${roomNumber}`,
         participants
+      }
+    }
+
+    private static transformToRawRoom ({ name, participants }: Room): RawRoom {
+      return {
+        name,
+        participants: participants.values()
       }
     }
 }

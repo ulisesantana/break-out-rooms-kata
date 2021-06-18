@@ -11,6 +11,7 @@ describe('Round organizer should', () => {
     expect(rooms).toHaveLength(2)
     expect(rooms[0].name).toBe('Room 1')
     expect(rooms[0].participants).toStrictEqual(['Juan', 'Manu'])
+    expect(rooms[1].name).toBe('Room 2')
     expect(rooms[1].participants).toStrictEqual(['Paco', 'Ulises'])
   })
 
