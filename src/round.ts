@@ -3,7 +3,7 @@ import { Participants } from './participants'
 
 export class Round {
   constructor (
-    public readonly number: number,
+    public readonly roundNumber: number,
     public readonly roomSize: number,
     public readonly rooms: Room[]
   ) {}

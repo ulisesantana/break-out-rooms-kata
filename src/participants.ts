@@ -5,28 +5,16 @@ export class Participants {
     this.participants = new Set(participants)
   }
 
-  add (...participants: string[] | Participants[]): void {
-    participants.forEach((participant: string | Participants) => {
-      if (participant !== undefined) {
-        if (participant instanceof Participants) {
-          this.add(...participant.values())
-        } else {
-          this.participants.add(participant)
-        }
-      }
-    })
+  add (participants: Participants): void {
+    for (const participant of participants.values()) {
+      this.participants.add(participant)
+    }
   }
 
-  delete (...participants: string[] | Participants[]): void {
-    participants.forEach((participant: string | Participants) => {
-      if (participant !== undefined) {
-        if (participant instanceof Participants) {
-          this.delete(...participant.values())
-        } else {
-          this.participants.delete(participant)
-        }
-      }
-    })
+  delete (participants: Participants): void {
+    for (const participant of participants.values()) {
+      this.participants.delete(participant)
+    }
   }
 
   get size (): number {
@@ -49,7 +37,7 @@ export class Participants {
     return this.values()[0]
   }
 
-  slice (start: number, end: number): Participants {
+  slice (start: number, end = this.size): Participants {
     return new Participants(this.values().slice(start, end))
   }
 
