@@ -1,4 +1,4 @@
-import { RoundService } from './roundService'
+import { RoundService } from './round.service'
 
 describe('Round service should', () => {
   it('retrieve a list of rooms', () => {
